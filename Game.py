@@ -8,19 +8,21 @@ from collections import Counter
 
 # Update this to set up a run
 # Import strategies and add them to the player mapping
-from Example_Strategy import HotDieBot
+from Example_Strategy import HotDieBot as ExampleBot
 
-player_1 = HotDieBot()
-player_2 = HotDieBot()
+player_0 = ExampleBot()
+player_1 = ExampleBot()
+player_2 = ExampleBot()
+player_3 = ExampleBot()
 
-players = {0: player_1, 1: player_2}
+players = {0: player_0, 1: player_1, 2: player_2, 3: player_3}
 
-# TODO doesnt cycle players
+# TODO
 class Game():
     def __init__(self):
         self.players = players
         self.cur_player = 0
-        self.cur_scores = {0:0, 1:0}
+        self.cur_scores = {0:0, 1:0, 2:0, 3:0}
 
     def game_over(self):
         return max(self.cur_scores.values()) > 10000
@@ -52,10 +54,10 @@ class Game():
                 return False
         return True
 
-    def legal_keep(self, kept_die, cur_roll, player_num):
+    def legal_keep(self, kept_die, cur_roll, player_num, cur_turn_score):
         if len(kept_die) > len(cur_roll):
             return False
-        if len(kept_die) == 0 and self.cur_scores[player_num] < 1000:
+        if len(kept_die) == 0 and self.cur_scores[player_num] < 1000 and cur_turn_score < 1000:
             return False
         if not self.list_contained_in(kept_die, cur_roll):
             return False
@@ -83,7 +85,7 @@ class Game():
                 return 50 * n + self.count_points([x for x in kept_die if x != k])
 
     def give_turn(self, player_num):
-        print("Player " + str(player_num + 1) + " is playing")
+        print("\nPlayer " + str(player_num) + " is playing")
         turn_over = False
         player = self.players[player_num]
         die_left = 6
@@ -95,35 +97,44 @@ class Game():
             turn_over = True
         while not turn_over:
             kept_die, stopping = player.take_turn(cur_roll, cur_turn_score, self.cur_scores)
-            print("Kept: " + str(kept_die))
-            if self.legal_keep(kept_die, cur_roll, player_num):
+            stopping_str = 'stopped' if stopping else 'kept rolling'
+            print("Kept: " + str(kept_die) + " and " + stopping_str)
+            if self.legal_keep(kept_die, cur_roll, player_num, cur_turn_score):
                 cur_turn_score += self.count_points(kept_die)
-                if self.is_bust(cur_roll):
-                    turn_over = True
                 if stopping:
-                    turn_over = True
                     self.cur_scores[player_num] += cur_turn_score
+                    turn_over = True
                 else:
                     die_left = die_left - len(kept_die)
                     if die_left == 0:
                         die_left = 6
                     cur_roll = self.roll_die(die_left)
                     print(cur_roll)
+                    if self.is_bust(cur_roll):
+                        print("Bust!")
+                        turn_over = True
             else:
                 print("Player " + str(player_num) + " returned an invalid keep!...")
                 print("Die kept were " + str(kept_die) + " out of " + str(cur_roll) + ", while player had " +
-                      str(self.cur_scores[player_num]) + " points, and player stopping: " + str(stopping))
+                      str(self.cur_scores[player_num] + cur_turn_score) + " points, and player stopping: " + str(stopping))
                 turn_over = True
-        self.cur_scores[player_num] += cur_turn_score
 
     def play_game(self):
         turn_count = 0
         while not self.game_over():
             self.give_turn(self.cur_player)
             self.cur_player = (self.cur_player + 1) % len(self.players)
+            print("Current Scores: " + str(self.cur_scores))
+            turn_count += 1
+        # Give everyone else a final turn
+        for i in range(len(self.players)):
+            self.give_turn(self.cur_player)
+            self.cur_player = (self.cur_player + 1) % len(self.players)
             print(self.cur_scores)
             turn_count += 1
-        print("Game Over in " + str(turn_count) + " turns!")
+        winner = max(self.cur_scores, key=self.cur_scores.get)
+        print("Game Over after " + str(turn_count // 4) + " rounds!")
+        print("Player " + str(winner) + " won!")
 
 def main():
     game = Game()
