@@ -9,11 +9,12 @@ from collections import Counter
 # Update this to set up a run
 # Import strategies and add them to the player mapping
 from Example_Strategy import HotDieBot as ExampleBot
+from Jims_Strategy import HotDieBot as JimBot
 
 player_0 = ExampleBot()
 player_1 = ExampleBot()
 player_2 = ExampleBot()
-player_3 = ExampleBot()
+player_3 = JimBot()
 
 players = {0: player_0, 1: player_1, 2: player_2, 3: player_3}
 
