@@ -55,11 +55,14 @@ class Game():
                 return False
         return True
 
-    def legal_keep(self, kept_die, cur_roll, player_num, cur_turn_score):
+    def legal_keep(self, kept_die, cur_roll, player_num, cur_turn_score, stopping):
         if len(kept_die) > len(cur_roll):
             return False
-        if len(kept_die) == 0 and self.cur_scores[player_num] < 1000 and cur_turn_score < 1000:
-            return False
+        if len(kept_die) == 0:
+            if not stopping:
+                return False
+            if self.cur_scores[player_num] < 1000 and cur_turn_score < 1000:
+                return False
         if not self.list_contained_in(kept_die, cur_roll):
             return False
         for num in [2,3,4,6]:
@@ -100,7 +103,7 @@ class Game():
             kept_die, stopping = player.take_turn(cur_roll, cur_turn_score, self.cur_scores)
             stopping_str = 'stopped' if stopping else 'kept rolling'
             print("Kept: " + str(kept_die) + " and " + stopping_str)
-            if self.legal_keep(kept_die, cur_roll, player_num, cur_turn_score):
+            if self.legal_keep(kept_die, cur_roll, player_num, cur_turn_score, stopping):
                 cur_turn_score += self.count_points(kept_die)
                 if stopping:
                     self.cur_scores[player_num] += cur_turn_score
