@@ -8,10 +8,10 @@ from collections import Counter
 
 # Update this to set up a run
 # Import strategies and add them to the player mapping
-import Jims_Strategy
+import Example_Strategy
 
-player_1 = Jims_Strategy()
-player_2 = Jims_Strategy()
+player_1 = Example_Strategy()
+player_2 = Example_Strategy()
 
 players = {1: player_1, 2: player_2}
 
@@ -68,7 +68,7 @@ class Game():
         cur_turn_score = 0
         cur_roll = self.roll_die(die_left)
         while not turn_over:
-            kept_die, stopping = player.choose_die(cur_roll, cur_turn_score, self.cur_scores)
+            kept_die, stopping = player.take_turn(cur_roll, cur_turn_score, self.cur_scores)
             if self.legal_keep(kept_die, cur_roll, player_num):
                 cur_turn_score += self.count_points(kept_die)
                 die_left = die_left - len(kept_die)
