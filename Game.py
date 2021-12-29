@@ -7,23 +7,23 @@ from collections import Counter
 # from which they must decide what to keep
 
 # Update this to set up a run
-# Import strategies and add them to the player mapping
+# Import strategies and add them to the player list
 from Example_Strategy import HotDieBot as ExampleBot
 from Jims_Strategy import HotDieBot as JimBot
 
-player_0 = ExampleBot()
-player_1 = ExampleBot()
-player_2 = ExampleBot()
-player_3 = JimBot()
+# Add your players here
+players = [ExampleBot(), ExampleBot(), ExampleBot(), JimBot()]
+# How many games to run?
+num_games = 1000
 
-players = {0: player_0, 1: player_1, 2: player_2, 3: player_3}
+players = dict(zip(range(0,len(players)),players))
 
 # TODO
 class Game():
     def __init__(self):
         self.players = players
         self.cur_player = 0
-        self.cur_scores = {0:0, 1:0, 2:0, 3:0}
+        self.cur_scores = dict(zip(range(0,len(players)),[0]*len(players)))
 
     def game_over(self):
         return max(self.cur_scores.values()) > 10000
@@ -139,10 +139,17 @@ class Game():
         winner = max(self.cur_scores, key=self.cur_scores.get)
         print("Game Over after " + str(turn_count // 4) + " rounds!")
         print("Player " + str(winner) + " won!")
+        return winner
 
 def main():
-    game = Game()
-    game.play_game()
+    winners = dict(zip(range(0,len(players)),[0]*len(players)))
+    for i in range(num_games):
+        game = Game()
+        winner = game.play_game()
+        winners[winner] += 1
+    print("\n\n")
+    print(winners)
+    print("\nPlayer 3 won " + str(winners[3] * 100 / num_games) + "% of the games!")
 
 if __name__ == '__main__':
     main()
