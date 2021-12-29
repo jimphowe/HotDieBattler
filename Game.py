@@ -14,7 +14,7 @@ from Jims_Strategy import HotDieBot as JimBot
 # Add your players here
 players = [ExampleBot(), ExampleBot(), ExampleBot(), JimBot()]
 # How many games to run?
-num_games = 1000
+num_games = 10000
 
 players = dict(zip(range(0,len(players)),players))
 

@@ -52,30 +52,63 @@ class HotDieBot():
                 else:
                     self.current_score += turn_score + take_able_points
                     return [take_able, True]
-        # For 4 die, always go around the corner if we can
-        # If not, if taking everything would put us at 350+, do that
+        # For 5 die, always go around the corner if we can
+        # If not, if taking everything would put us at 300+, do that
         # Otherwise, take a single 1 or 5 and roll the other 4
+        # When getting on the board, take all but 1 die if we can
+        # If not, take just a single 1 or 5 and re-roll
         elif len(roll) == 5:
             if self.can_take_all(roll):
                 return [roll,False]
             elif on_board:
-                self.current_score += turn_score + take_able_points
-                return [take_able,True]
+                if turn_score + take_able_points > 250:
+                    return [take_able,True]
+                else:
+                    if 1 in roll:
+                        return [[1],False]
+                    else:
+                        return [[5],False]
             else:
                 if turn_score + take_able_points < 1000:
-                    return [take_able, False]
+                    if len(take_able) == 4:
+                        return [take_able,False]
+                    else:
+                        if 1 in roll:
+                            return [[1],False]
+                        elif 5 in roll:
+                            return [[5],False]
+                        else:
+                            return [take_able,False]
                 else:
                     self.current_score += turn_score + take_able_points
                     return [take_able, True]
+        # For 6 die, always go around the corner if we can
+        # If not, if taking everything would put us at 350+, do that
+        # Otherwise, take a single 1 or 5 and roll the other 5
+        # When getting on the board, take all but 1 die if we can
+        # If not, take just a single 1 or 5 and re-roll
         elif len(roll) == 6:
             if self.can_take_all(roll):
-                return [roll, False]
+                return [roll,False]
             elif on_board:
-                self.current_score += turn_score + take_able_points
-                return [take_able, True]
+                if turn_score + take_able_points > 300:
+                    return [take_able,True]
+                else:
+                    if 1 in roll:
+                        return [[1],False]
+                    else:
+                        return [[5],False]
             else:
                 if turn_score + take_able_points < 1000:
-                    return [take_able, False]
+                    if len(take_able) == 5:
+                        return [take_able,False]
+                    else:
+                        if 1 in roll:
+                            return [[1],False]
+                        elif 5 in roll:
+                            return [[5],False]
+                        else:
+                            return [take_able,False]
                 else:
                     self.current_score += turn_score + take_able_points
                     return [take_able, True]
